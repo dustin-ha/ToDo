@@ -147,7 +147,7 @@ routes.get('/fertig', (req, res)  =>
             todos[i].fertig = settings[1];
             settings[1] = settings[1] + 1
 
-            let n: number = todos.length //update
+            let n: number = todos.length 
                 while (n > 1) {
                     for (let i = 0; i <= n - 2; i++) {
                         if (todos[i].fertig > todos[i + 1].fertig) {
