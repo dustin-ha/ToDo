@@ -183,10 +183,14 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     let zeit: string = Date();
     todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0})
     res.send("Erstellt")
-    settings[0] = settings[0] + 1
+    settings[0] = settings[0] + 2
     
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+})
+
+routes.delete("/delete", (req, res) => {
+    res.send("hallo");
 })
 
 export default routes;
