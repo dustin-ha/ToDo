@@ -147,7 +147,7 @@ routes.get('/fertig', (req, res)  =>
             todos[i].fertig = settings[1];
             settings[1] = settings[1] + 1
 
-            let n: number = todos.length 
+            let n: number = todos.length //update
                 while (n > 1) {
                     for (let i = 0; i <= n - 2; i++) {
                         if (todos[i].fertig > todos[i + 1].fertig) {
@@ -159,10 +159,10 @@ routes.get('/fertig', (req, res)  =>
                     n--
                 }
         }
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
         return res.send("Als fertig markiert")
     }
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
 })
 
 routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {

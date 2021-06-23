@@ -116,7 +116,7 @@ routes.get('/', (req, res) => {
     }
 });
 routes.get('/fertig', (req, res) => {
-    for (let i = 0; i < todos.length - 1; i++) {
+    for (let i = 0; i < todos.length; i++) {
         if (todos[i].id.toString() == req.query.id) {
             todos[i].fertig = settings[1];
             settings[1] = settings[1] + 1;
