@@ -189,4 +189,8 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
 })
 
+routes.delete("/delete", (req, res) => {
+    res.send("hallo");
+})
+
 export default routes;
