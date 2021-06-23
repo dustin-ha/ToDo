@@ -153,15 +153,6 @@
         "fertig": 0
     },
     {
-        "id": 20,
-        "name": "Wichtige Aufgabe2",
-        "erstellt": "Wed Jun 23 2021 14:08:40 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": "1304",
-        "gruppe": "Nicht Standard",
-        "prio": "2",
-        "fertig": 0
-    },
-    {
         "id": 21,
         "name": "Wichtige Aufgabe2",
         "erstellt": "Wed Jun 23 2021 14:08:40 GMT+0200 (Mitteleuropäische Sommerzeit)",
@@ -187,5 +178,14 @@
         "gruppe": "Nicht Standard",
         "prio": "2",
         "fertig": 4
+    },
+    {
+        "id": 20,
+        "name": "Wichtige Aufgabe2",
+        "erstellt": "Wed Jun 23 2021 14:08:40 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": "1304",
+        "gruppe": "Nicht Standard",
+        "prio": "2",
+        "fertig": 5
     }
 ]
