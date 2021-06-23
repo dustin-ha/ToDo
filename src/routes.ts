@@ -140,29 +140,27 @@ routes.get('/', (req, res) => {
 
 routes.get('/fertig', (req, res)  => 
 {
-    for(let i=0; i< todos.length; i++)
-    {
-        if(todos[i].id.toString() == req.query.id)
-        {
-            todos[i].fertig = settings[1];
+    for (let u = 0; u < todos.length; u++) {
+        if (req.query.id == todos[u].id.toString()) {
+            todos[u].fertig = settings[1]
             settings[1] = settings[1] + 1
-
-            let n: number = todos.length 
-                while (n > 1) {
-                    for (let i = 0; i <= n - 2; i++) {
-                        if (todos[i].fertig > todos[i + 1].fertig) {
-                            let hilf: Todo = todos[i]
-                            todos[i] = todos[i + 1]
-                            todos[i + 1] = hilf
-                        }
-                    }
-                    n--
-                }
+            fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
         }
-        return res.send("Als fertig markiert")
+
+    }
+    let n: number = todos.length
+    while (n > 1) {
+        for (let i = 0; i <= n - 2; i++) {
+            if (todos[i].fertig < todos[i + 1].fertig) {
+                let hilf: Todo = todos[i]
+                todos[i] = todos[i + 1]
+                todos[i + 1] = hilf
+            }
+        }
+        n--
     }
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
+    return res.send(todos)
 })
 
 routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
