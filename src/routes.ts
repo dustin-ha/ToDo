@@ -19,7 +19,7 @@ interface Todo {
 
 const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
-const routes = Router(); //Mal sehen
+const routes = Router(); 
 
 routes.get('/', (req, res) => {
     switch (req.query.sortieren) {
