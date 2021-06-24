@@ -36,7 +36,7 @@ routes.get('/', (req, res) => {
         erstellt : compareErstellt,
         ende: compareEnde
     }
-    
+
     if(req.query.richtung == "auf")
     {
         res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
@@ -89,6 +89,45 @@ routes.delete('/delete', (req, res) => {
             return res.send("Gelöscht")
         }
     }
+})
+
+
+
+routes.get('/fertig', (req, res) => {
+    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    todo.fertig = true
+    todos.sort(compareFertig)
+    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
+    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+    return res.send(todos)
+})
+
+routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
+    let GruppeX: string;
+    let ende: number;
+    if (req.query.ende == undefined) {
+        ende = 0
+    }
+    else {
+        ende = req.query.ende
+    }
+
+    if (req.query.gruppe == undefined) {
+        GruppeX = "Standard"
+    }
+    else {
+        GruppeX = req.query.gruppe
+    }
+
+    let zeit: string = Date();
+    todos.reverse()
+    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false })
+    todos.reverse()
+    res.send("Erstellt")
+    settings.aktuelleID++;
+
+    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
+    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
 })
 
 function comparePrio(a: Todo, b: Todo) {
@@ -166,42 +205,5 @@ function compareName(a: Todo, b: Todo) {
     }
     return 0;
 };
-
-routes.get('/fertig', (req, res) => {
-    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    todo.fertig = true
-    todos.sort(compareFertig)
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-    return res.send(todos)
-})
-
-routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
-    let GruppeX: string;
-    let ende: number;
-    if (req.query.ende == undefined) {
-        ende = 0
-    }
-    else {
-        ende = req.query.ende
-    }
-
-    if (req.query.gruppe == undefined) {
-        GruppeX = "Standard"
-    }
-    else {
-        GruppeX = req.query.gruppe
-    }
-
-    let zeit: string = Date();
-    todos.reverse()
-    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false })
-    todos.reverse()
-    res.send("Erstellt")
-    settings.aktuelleID++;
-
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-})
 
 export default routes;
