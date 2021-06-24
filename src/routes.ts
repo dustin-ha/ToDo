@@ -25,23 +25,21 @@ const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 const routes = Router();
 
 function sortieren(nachWas: string) {
+    const todoSort: Todo[] = todos;
     switch (nachWas) {
         case "prio":
             {
-                const todoPrio: Todo[] = todos;
-                todoPrio.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     if (b.fertig == false) {
                         return a.prio - b.prio;
                     }
                     return 0
                 });
-                return todoPrio
-
+                break;
             }
         case "name":
             {
-                const todoName: Todo[] = todos;
-                todoName.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     var nameA = a.name.toUpperCase();
                     var nameB = b.name.toUpperCase();
                     if (nameA < nameB && b.fertig == false) {
@@ -52,13 +50,11 @@ function sortieren(nachWas: string) {
                     }
                     return 0;
                 });
-                return todoName
-
+                break;
             }
         case "gruppe":
             {
-                const todoGruppe: Todo[] = todos;
-                todoGruppe.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     var nameA = a.gruppe.toUpperCase();
                     var nameB = b.gruppe.toUpperCase();
                     if (nameA < nameB && b.fertig == false) {
@@ -69,37 +65,31 @@ function sortieren(nachWas: string) {
                     }
                     return 0;
                 });
-                return todoGruppe
-
+                break;
             }
         case "id":
-            {
-                const todoID: Todo[] = todos;
-                todoID.sort(function (a, b) {
+            { 
+                todoSort.sort(function (a, b) {
                     if (b.fertig == false) {
                         return a.id - b.id;
                     }
                     return 0
                 });
-                return todoID
-
+                break;
             }
         case "ende":
             {
-                const todoEnde: Todo[] = todos;
-                todoEnde.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     if (b.fertig == false) {
                         return a.ende - b.ende;
                     }
                     return 0
                 });
-                return todoEnde
-
+                break;
             }
         case "erstellt":
             {
-                const todoErstellt: Todo[] = todos;
-                todoErstellt.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     var nameA = a.erstellt.toUpperCase();
                     var nameB = b.erstellt.toUpperCase();
                     if (nameA < nameB && b.fertig == false) {
@@ -110,14 +100,14 @@ function sortieren(nachWas: string) {
                     }
                     return 0;
                 });
-                return todoErstellt
-
+                break;
             }
         default: {
             return todos
 
         }
     }
+    return todoSort
 }
 
 routes.get('/', (req, res) => {
@@ -175,9 +165,10 @@ routes.patch('/edit', (req, res) => {
                 else {
                     todos[i].fertig = false;
                 }
+                todos.sort(compareFertig);
             }
             fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-            return res.send(todos[i])
+            return res.send(todos[i]);
         }
     }
     return res.send("Id not found")
@@ -242,7 +233,9 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     }
 
     let zeit: string = Date();
+    todos.reverse()
     todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false })
+    todos.reverse()
     res.send("Erstellt")
     settings[0] = settings[0] + 1
 
