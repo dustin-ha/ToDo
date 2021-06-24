@@ -115,27 +115,68 @@ routes.get('/', (req, res) => {
         }
     }
 });
+routes.patch('/edit', (req, res) => {
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            if (req.query.name != undefined) {
+                todos[i].name = req.query.name.toString();
+            }
+            if (req.query.gruppe != undefined) {
+                todos[i].gruppe = req.query.gruppe.toString();
+            }
+            if (req.query.prio != undefined) {
+                todos[i].prio = parseInt(req.query.prio.toString());
+            }
+            if (req.query.ende != undefined) {
+                todos[i].ende = parseInt(req.query.ende.toString());
+            }
+            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+            return res.send(todos[i]);
+        }
+    }
+    return res.send("Id not found");
+});
+routes.delete('/delete', (req, res) => {
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            todos[i].delete = true;
+            todos.sort(compareDelete);
+            console.log(todos.pop());
+            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+            return res.send("Gelöscht");
+        }
+    }
+});
+function compareDelete(a, b) {
+    if (a.delete == b.delete) {
+        return 0;
+    }
+    if (a.delete && !b.delete) {
+        return 1;
+    }
+    return -1;
+}
 routes.get('/fertig', (req, res) => {
-    for (let i = 0; i < todos.length - 1; i++) {
-        if (todos[i].id.toString() == req.query.id) {
-            todos[i].fertig = settings[1];
+    for (let u = 0; u < todos.length; u++) {
+        if (req.query.id == todos[u].id.toString()) {
+            todos[u].fertig = settings[1];
             settings[1] = settings[1] + 1;
-            let n = todos.length;
-            while (n > 1) {
-                for (let i = 0; i <= n - 2; i++) {
-                    if (todos[i].fertig > todos[i + 1].fertig) {
-                        let hilf = todos[i];
-                        todos[i] = todos[i + 1];
-                        todos[i + 1] = hilf;
-                    }
-                }
-                n--;
+            fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
+        }
+    }
+    let n = todos.length;
+    while (n > 1) {
+        for (let i = 0; i <= n - 2; i++) {
+            if (todos[i].fertig > todos[i + 1].fertig) {
+                let hilf = todos[i];
+                todos[i] = todos[i + 1];
+                todos[i + 1] = hilf;
             }
         }
-        return res.send("Als fertig markiert");
+        n--;
     }
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
+    return res.send(todos);
 });
 routes.post('/new', (req, res) => {
     let GruppeX;
@@ -153,7 +194,7 @@ routes.post('/new', (req, res) => {
         GruppeX = req.query.gruppe;
     }
     let zeit = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0 });
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: 0, delete: false });
     res.send("Erstellt");
     settings[0] = settings[0] + 1;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));

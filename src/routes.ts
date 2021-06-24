@@ -15,6 +15,8 @@ interface Todo {
     gruppe: string;
     prio: number;  //0 bis 3
     fertig: boolean;
+    delete: boolean;
+
 }
 
 const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
@@ -118,6 +120,57 @@ routes.get('/', (req, res) => {
     }
 });
 
+
+routes.patch('/edit', (req, res) =>
+{
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            if(req.query.name != undefined)
+            {
+                todos[i].name = req.query.name.toString();
+            }
+            if(req.query.gruppe != undefined)
+            {
+                todos[i].gruppe = req.query.gruppe.toString();
+            }
+            if(req.query.prio != undefined)
+            {
+                todos[i].prio = parseInt(req.query.prio.toString()); 
+            }
+            if(req.query.ende != undefined)
+            {
+                todos[i].ende = parseInt(req.query.ende.toString());
+            }
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        return res.send(todos[i])
+        }
+    }
+    return res.send("Id not found")
+})
+
+routes.delete('/delete', (req, res) =>
+{
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            todos[i].delete = true
+            todos.sort(compareDelete)
+            console.log(todos.pop())
+            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+            return res.send("Gelöscht")
+        }
+    }
+})
+
+function compareDelete(a: Todo, b: Todo) {
+    if(a.delete == b.delete) {
+      return 0;
+    }
+    if(a.delete && !b.delete) {
+      return 1;
+    }
+    return -1;
+  }
+           
 function compareFertig(a: Todo, b: Todo) {
     if(a.fertig == b.fertig) {
       return 0;
@@ -125,8 +178,7 @@ function compareFertig(a: Todo, b: Todo) {
     if(a.fertig && !b.fertig) {
       return 1;
     }
-    return -1;
-  }
+}
 
 routes.get('/fertig', (req, res) => {
     const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
@@ -156,7 +208,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     }
 
     let zeit: string = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: false})
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: 0, delete: false})
     res.send("Erstellt")
     settings[0] = settings[0] + 1
 
