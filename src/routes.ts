@@ -139,6 +139,33 @@ routes.get('/', (req, res) => {
     }
 });
 
+routes.patch('/edit', (req, res) =>
+{
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            if(req.query.name != undefined)
+            {
+                todos[i].name = req.query.name.toString();
+            }
+            if(req.query.gruppe != undefined)
+            {
+                todos[i].gruppe = req.query.gruppe.toString();
+            }
+            if(req.query.prio != undefined)
+            {
+                todos[i].prio = parseInt(req.query.prio.toString()); 
+            }
+            if(req.query.ende != undefined)
+            {
+                todos[i].ende = parseInt(req.query.ende.toString());
+            }
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        return res.send(todos[i])
+        }
+    }
+    return res.send("Id not found")
+})
+
 routes.delete('/delete', (req, res) =>
 {
     for (let i = 0; i < todos.length; i++) {
@@ -146,6 +173,7 @@ routes.delete('/delete', (req, res) =>
             todos[i].delete = true
             todos.sort(compareDelete)
             console.log(todos.pop())
+            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
             return res.send("Gelöscht")
         }
     }
@@ -204,7 +232,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     }
 
     let zeit: string = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0, delete: false})
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(ende), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: 0, delete: false})
     res.send("Erstellt")
     settings[0] = settings[0] + 1
     
