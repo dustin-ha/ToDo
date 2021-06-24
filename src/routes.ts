@@ -14,7 +14,7 @@ interface Todo {
     ende: number;
     gruppe: string;
     prio: number;  //0 bis 3
-    fertig: number;
+    fertig: boolean;
 }
 
 const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
@@ -27,7 +27,7 @@ routes.get('/', (req, res) => {
             {
                 const todoPrio: Todo[] = todos;
                 todoPrio.sort(function (a, b) {
-                    if (b.fertig == 0) {
+                    if (b.fertig == false) {
                         return a.prio - b.prio;
                     }
                     return 0
@@ -42,10 +42,10 @@ routes.get('/', (req, res) => {
                 todoName.sort(function (a, b) {
                     var nameA = a.name.toUpperCase();
                     var nameB = b.name.toUpperCase();
-                    if (nameA < nameB && b.fertig == 0) {
+                    if (nameA < nameB && b.fertig == false) {
                         return -1;
                     }
-                    if (nameA > nameB && b.fertig == 0) {
+                    if (nameA > nameB && b.fertig == false) {
                         return 1;
                     }
                     return 0;
@@ -59,10 +59,10 @@ routes.get('/', (req, res) => {
                 todoGruppe.sort(function (a, b) {
                     var nameA = a.gruppe.toUpperCase();
                     var nameB = b.gruppe.toUpperCase();
-                    if (nameA < nameB && b.fertig == 0) {
+                    if (nameA < nameB && b.fertig == false) {
                         return -1;
                     }
-                    if (nameA > nameB && b.fertig == 0) {
+                    if (nameA > nameB && b.fertig == false) {
                         return 1;
                     }
                     return 0;
@@ -74,7 +74,7 @@ routes.get('/', (req, res) => {
             {
                 const todoID: Todo[] = todos;
                 todoID.sort(function (a, b) {
-                    if (b.fertig == 0) {
+                    if (b.fertig == false) {
                         return a.id - b.id;
                     }
                     return 0
@@ -86,7 +86,7 @@ routes.get('/', (req, res) => {
             {
                 const todoEnde: Todo[] = todos;
                 todoEnde.sort(function (a, b) {
-                    if (b.fertig == 0) {
+                    if (b.fertig == false) {
                         return a.ende - b.ende;
                     }
                     return 0
@@ -99,11 +99,11 @@ routes.get('/', (req, res) => {
                 const todoErstellt: Todo[] = todos;
                 todoErstellt.sort(function (a, b) {
                     var nameA = a.erstellt.toUpperCase();
-                    var nameB = b.erstellt.toUpperCase(); m
-                    if (nameA < nameB && b.fertig == 0) {
+                    var nameB = b.erstellt.toUpperCase(); 
+                    if (nameA < nameB && b.fertig == false) {
                         return -1;
                     }
-                    if (nameA > nameB && b.fertig == 0) {
+                    if (nameA > nameB && b.fertig == false) {
                         return 1;
                     }
                     return 0;
@@ -119,8 +119,8 @@ routes.get('/', (req, res) => {
 });
 
 routes.get('/fertig', (req, res) => {
-    const index: number = todos.id.findIndex(req.query.id)
-    todos[index].fertig = settings[1]
+    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    todo.fertig == true
     settings[1]++
     todos.sort(function (a, b) {
         return a.ende - b.ende;
@@ -148,7 +148,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     }
 
     let zeit: string = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0 })
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: false})
     res.send("Erstellt")
     settings[0] = settings[0] + 1
 
