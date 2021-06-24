@@ -1,29 +1,47 @@
 [
     {
+        "id": 2,
+        "name": "c",
+        "erstellt": "Thu Jun 24 2021 09:46:44 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": "1357",
+        "gruppe": "a",
+        "prio": "0",
+        "fertig": 1
+    },
+    {
         "id": 4,
-        "name": "Wichtige Aufgabe2",
-        "erstellt": "Wed Jun 23 2021 10:55:09 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": "1304",
-        "gruppe": "Nicht Standard",
-        "prio": "2",
+        "name": "h",
+        "erstellt": "Thu Jun 24 2021 09:47:19 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": "3257",
+        "gruppe": "a",
+        "prio": "0",
         "fertig": 0
     },
     {
-        "id": 6,
-        "name": "Wichtige Aufgabe2",
-        "erstellt": "Wed Jun 23 2021 10:57:54 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": "1304",
-        "gruppe": "Nicht Standard",
+        "id": 3,
+        "name": "b",
+        "erstellt": "Thu Jun 24 2021 09:47:04 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": "1257",
+        "gruppe": "f",
+        "prio": "1",
+        "fertig": 0
+    },
+    {
+        "id": 1,
+        "name": "a",
+        "erstellt": "Thu Jun 24 2021 09:46:26 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": "1327",
+        "gruppe": "b",
         "prio": "2",
         "fertig": 0
     },
     {
         "id": 5,
-        "name": "Wichtige Aufgabe2",
-        "erstellt": "Wed Jun 23 2021 10:57:24 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": "1304",
-        "gruppe": "Nicht Standard",
-        "prio": "2",
-        "fertig": 1
+        "name": "j",
+        "erstellt": "Thu Jun 24 2021 09:47:36 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": "257",
+        "gruppe": "d",
+        "prio": "3",
+        "fertig": 0
     }
 ]
