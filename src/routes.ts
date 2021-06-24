@@ -37,8 +37,14 @@ routes.get('/', (req, res) => {
         ende: compareEnde
     }
     
-    res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
-
+    if(req.query.richtung == "auf")
+    {
+        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
+    }
+    else
+    {
+        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
+    }
 });
 
 
