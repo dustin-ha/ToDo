@@ -232,7 +232,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     }
 
     let zeit: string = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(ende), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: 0, delete: false})
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: 0, delete: false})
     res.send("Erstellt")
     settings[0] = settings[0] + 1
     
