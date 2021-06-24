@@ -5,8 +5,7 @@ import { Request, Response } from 'express';
 import { idText } from 'typescript';
 
 const fs = require("fs");
-
-const settings: number[] = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
+//const settings: number[] = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 
 interface Todo {
     id: number;
@@ -20,6 +19,11 @@ interface Todo {
 
 }
 
+interface SettingsInterface{
+    aktuelleID: number;
+}
+
+const settings: SettingsInterface = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
 const routes = Router();
@@ -208,7 +212,6 @@ function compareFertig(a: Todo, b: Todo) {
 routes.get('/fertig', (req, res) => {
     const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
     todo.fertig = true
-    settings[1]++
     todos.sort(compareFertig)
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
@@ -234,10 +237,10 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
 
     let zeit: string = Date();
     todos.reverse()
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false })
+    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false})
     todos.reverse()
     res.send("Erstellt")
-    settings[0] = settings[0] + 1
+    settings.aktuelleID++;
 
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
