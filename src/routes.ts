@@ -5,7 +5,6 @@ import { Request, Response } from 'express';
 import { idText } from 'typescript';
 
 const fs = require("fs");
-
 //const settings: number[] = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 
 interface Todo {
