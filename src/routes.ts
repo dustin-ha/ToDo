@@ -143,7 +143,22 @@ routes.patch('/edit', (req, res) =>
 {
     for (let i = 0; i < todos.length; i++) {
         if (req.query.id == todos[i].id.toString()) {
-            
+            if(req.query.name != undefined)
+            {
+                todos[i].name = req.query.name.toString();
+            }
+            if(req.query.gruppe != undefined)
+            {
+                todos[i].gruppe = req.query.gruppe.toString();
+            }
+            if(req.query.prio != undefined)
+            {
+                todos[i].prio = parseInt(req.query.prio.toString()); 
+            }
+            if(req.query.ende != undefined)
+            {
+                todos[i].ende = parseInt(req.query.name.toString());
+            }
         }
     }
 })
