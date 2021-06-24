@@ -194,7 +194,7 @@ routes.post('/new', (req, res) => {
         GruppeX = req.query.gruppe;
     }
     let zeit = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0, delete: false });
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: 0, delete: false });
     res.send("Erstellt");
     settings[0] = settings[0] + 1;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
