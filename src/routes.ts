@@ -14,121 +14,102 @@ interface Todo {
     ende: number;
     gruppe: string;
     prio: number;  //0 bis 3
-    fertig: number;
+    fertig: boolean;
     delete: boolean;
+
 }
 
 const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
-const routes = Router(); 
+const routes = Router();
 
 routes.get('/', (req, res) => {
     switch (req.query.sortieren) {
         case "prio":
             {
                 const todoPrio: Todo[] = todos;
-
-                let n: number = todoPrio.length
-                while (n > 1) {
-                    for (let i = 0; i <= n - 2; i++) {
-                        if (todoPrio[i].prio < todoPrio[i + 1].prio && todoPrio[i].fertig == 0) {
-                            let hilf: Todo = todoPrio[i]
-                            todoPrio[i] = todoPrio[i + 1]
-                            todoPrio[i + 1] = hilf
-                        }
+                todoPrio.sort(function (a, b) {
+                    if (b.fertig == false) {
+                        return a.prio - b.prio;
                     }
-                    n--
-                }
+                    return 0
+                });
                 return res.send(todoPrio)
                 break;
+
             }
         case "name":
             {
                 const todoName: Todo[] = todos;
-
-                let n: number = todoName.length
-                while (n > 1) {
-                    for (let i = 0; i <= n - 2; i++) {
-                        if (todoName[i].name > todoName[i + 1].name && todoName[i].fertig == 0) {
-                            let hilf: Todo = todoName[i]
-                            todoName[i] = todoName[i + 1]
-                            todoName[i + 1] = hilf
-                        }
+                todoName.sort(function (a, b) {
+                    var nameA = a.name.toUpperCase();
+                    var nameB = b.name.toUpperCase();
+                    if (nameA < nameB && b.fertig == false) {
+                        return -1;
                     }
-                    n--
-                }
+                    if (nameA > nameB && b.fertig == false) {
+                        return 1;
+                    }
+                    return 0;
+                });
                 return res.send(todoName)
                 break;
             }
         case "gruppe":
             {
                 const todoGruppe: Todo[] = todos;
-
-                let n: number = todoGruppe.length
-                while (n > 1) {
-                    for (let i = 0; i <= n - 2; i++) {
-                        if (todoGruppe[i].gruppe > todoGruppe[i + 1].gruppe && todoGruppe[i].fertig == 0) {
-                            let hilf: Todo = todoGruppe[i]
-                            todoGruppe[i] = todoGruppe[i + 1]
-                            todoGruppe[i + 1] = hilf
-                        }
+                todoGruppe.sort(function (a, b) {
+                    var nameA = a.gruppe.toUpperCase();
+                    var nameB = b.gruppe.toUpperCase();
+                    if (nameA < nameB && b.fertig == false) {
+                        return -1;
                     }
-                    n--
-                }
+                    if (nameA > nameB && b.fertig == false) {
+                        return 1;
+                    }
+                    return 0;
+                });
                 return res.send(todoGruppe)
                 break;
             }
         case "id":
             {
                 const todoID: Todo[] = todos;
-
-                let n: number = todoID.length
-                while (n > 1) {
-                    for (let i = 0; i <= n - 2; i++) {
-                        if (todoID[i].id > todoID[i + 1].id && todoID [i].fertig == 0) {
-                            let hilf: Todo = todoID[i]
-                            todoID[i] = todoID[i + 1]
-                            todoID[i + 1] = hilf
-                        }
+                todoID.sort(function (a, b) {
+                    if (b.fertig == false) {
+                        return a.id - b.id;
                     }
-                    n--
-                }
+                    return 0
+                });
                 return res.send(todoID)
                 break;
             }
         case "ende":
             {
                 const todoEnde: Todo[] = todos;
-
-                let n: number = todoEnde.length
-                while (n > 1) {
-                    for (let i = 0; i <= n - 2; i++) {
-                        if (todoEnde[i].ende > todoEnde[i + 1].ende && todoEnde[i].fertig == 0) {
-                            let hilf: Todo = todoEnde[i]
-                            todoEnde[i] = todoEnde[i + 1]
-                            todoEnde[i + 1] = hilf
-                        }
+                todoEnde.sort(function (a, b) {
+                    if (b.fertig == false) {
+                        return a.ende - b.ende;
                     }
-                    n--
-                }
+                    return 0
+                });
                 return res.send(todoEnde)
                 break;
             }
-            case "erstellt":
+        case "erstellt":
             {
                 const todoErstellt: Todo[] = todos;
-
-                let n: number = todoErstellt.length
-                while (n > 1) {
-                    for (let i = 0; i <= n - 2; i++) {
-                        if (todoErstellt[i].erstellt > todoErstellt[i + 1].erstellt && todoErstellt[i].fertig == 0) {
-                            let hilf: Todo = todoErstellt[i]
-                            todoErstellt[i] = todoErstellt[i + 1]
-                            todoErstellt[i + 1] = hilf
-                        }
+                todoErstellt.sort(function (a, b) {
+                    var nameA = a.erstellt.toUpperCase();
+                    var nameB = b.erstellt.toUpperCase(); 
+                    if (nameA < nameB && b.fertig == false) {
+                        return -1;
                     }
-                    n--
-                }
+                    if (nameA > nameB && b.fertig == false) {
+                        return 1;
+                    }
+                    return 0;
+                });
                 return res.send(todoErstellt)
                 break;
             }
@@ -138,6 +119,7 @@ routes.get('/', (req, res) => {
         }
     }
 });
+
 
 routes.patch('/edit', (req, res) =>
 {
@@ -188,28 +170,22 @@ function compareDelete(a: Todo, b: Todo) {
     }
     return -1;
   }
-
-routes.get('/fertig', (req, res)  => 
-{
-    for (let u = 0; u < todos.length; u++) {
-        if (req.query.id == todos[u].id.toString()) {
-            todos[u].fertig = settings[1]
-            settings[1] = settings[1] + 1
-            fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-        }
-
+           
+function compareFertig(a: Todo, b: Todo) {
+    if(a.fertig == b.fertig) {
+      return 0;
     }
-    let n: number = todos.length
-    while (n > 1) {
-        for (let i = 0; i <= n - 2; i++) {
-            if (todos[i].fertig > todos[i + 1].fertig) {
-                let hilf: Todo = todos[i]
-                todos[i] = todos[i + 1]
-                todos[i + 1] = hilf
-            }
-        }
-        n--
+    if(a.fertig && !b.fertig) {
+      return 1;
     }
+}
+
+routes.get('/fertig', (req, res) => {
+    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    todo.fertig = true
+    settings[1]++
+    todos.sort(compareFertig)
+    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
     return res.send(todos)
 })
@@ -235,7 +211,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: 0, delete: false})
     res.send("Erstellt")
     settings[0] = settings[0] + 1
-    
+
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
 })
