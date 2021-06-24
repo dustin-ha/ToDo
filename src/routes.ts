@@ -208,31 +208,19 @@ routes.get('/fertig', (req, res) => {
 })
 
 routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
-    let GruppeX: string;
-    let ende: number;
-    if (req.query.ende == undefined) {
-        ende = 0
-    }
-    else {
-        ende = req.query.ende
-    }
+    const ende: number = req.query.ende ?? 0
+    const gruppe: string = req.query.gruppe.toString() ?? "Standard"
+    const zeit: string = Date();
+    const prio: number = req.query.prio ?? 0
 
-    if (req.query.gruppe == undefined) {
-        GruppeX = "Standard"
-    }
-    else {
-        GruppeX = req.query.gruppe
-    }
-
-    let zeit: string = Date();
     todos.reverse()
-    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false })
+    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false })
     todos.reverse()
-    res.send("Erstellt")
+    
     settings.aktuelleID++;
-
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+    res.send("Erstellt")
 })
 
 export default routes;
