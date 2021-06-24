@@ -5,119 +5,21 @@ const fs = require("fs");
 const settings = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 const todos = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 const routes = express_1.Router();
-function sortieren(nachWas) {
-    const todoSort = todos;
-    switch (nachWas) {
-        case "prio":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.prio - b.prio;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "name":
-            {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.name.toUpperCase();
-                    var nameB = b.name.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "gruppe":
-            {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.gruppe.toUpperCase();
-                    var nameB = b.gruppe.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "id":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.id - b.id;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "ende":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.ende - b.ende;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "erstellt":
-            {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.erstellt.toUpperCase();
-                    var nameB = b.erstellt.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        default: {
-            return todos;
-        }
-    }
-    return todoSort;
-}
 routes.get('/', (req, res) => {
-    switch (req.query.sortieren) {
-        case "prio":
-            {
-                return res.send(sortieren("prio"));
-            }
-        case "name":
-            {
-                return res.send(sortieren("name"));
-            }
-        case "gruppe":
-            {
-                return res.send(sortieren("gruppe"));
-            }
-        case "id":
-            {
-                return res.send(sortieren("id"));
-            }
-        case "ende":
-            {
-                return res.send(sortieren("ende"));
-            }
-        case "erstellt":
-            {
-                return res.send(sortieren("erstellt"));
-            }
-        default: {
-            return res.send(todos);
-        }
+    var _a, _b;
+    const sortFunctions = {
+        name: compareName,
+        prio: comparePrio,
+        gruppe: compareGruppe,
+        Id: compareID,
+        erstellt: compareErstellt,
+        ende: compareEnde
+    };
+    if (req.query.richtung == "auf") {
+        res.send(todos.sort(sortFunctions[(_a = req.query.sortieren.toString()) !== null && _a !== void 0 ? _a : "name"]));
+    }
+    else {
+        res.send(todos.sort(sortFunctions[(_b = req.query.sortieren.toString()) !== null && _b !== void 0 ? _b : "name"]).reverse());
     }
 });
 routes.patch('/edit', (req, res) => {
@@ -161,6 +63,34 @@ routes.delete('/delete', (req, res) => {
         }
     }
 });
+routes.get('/fertig', (req, res) => {
+    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    todo.fertig = true;
+    todos.sort(compareFertig);
+    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
+    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+    return res.send(todos);
+});
+routes.post('/new', (req, res) => {
+    var _a, _b, _c;
+    const ende = (_a = req.query.ende) !== null && _a !== void 0 ? _a : 0;
+    const gruppe = (_b = req.query.gruppe.toString()) !== null && _b !== void 0 ? _b : "Standard";
+    const zeit = Date();
+    const prio = (_c = req.query.prio) !== null && _c !== void 0 ? _c : 0;
+    todos.reverse();
+    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false });
+    todos.reverse();
+    settings.aktuelleID++;
+    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
+    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+    res.send("Erstellt");
+});
+function comparePrio(a, b) {
+    if (b.fertig == false) {
+        return a.prio - b.prio;
+    }
+    return 0;
+}
 function compareDelete(a, b) {
     if (a.delete == b.delete) {
         return 0;
@@ -178,37 +108,50 @@ function compareFertig(a, b) {
         return 1;
     }
 }
-routes.get('/fertig', (req, res) => {
-    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    todo.fertig = true;
-    todos.sort(compareFertig);
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-    return res.send(todos);
-});
-routes.post('/new', (req, res) => {
-    let GruppeX;
-    let ende;
-    if (req.query.ende == undefined) {
-        ende = 0;
+function compareGruppe(a, b) {
+    var nameA = a.gruppe.toUpperCase();
+    var nameB = b.gruppe.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
     }
-    else {
-        ende = req.query.ende;
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
     }
-    if (req.query.gruppe == undefined) {
-        GruppeX = "Standard";
+}
+function compareID(a, b) {
+    if (b.fertig == false) {
+        return a.id - b.id;
     }
-    else {
-        GruppeX = req.query.gruppe;
+    return 0;
+}
+function compareErstellt(a, b) {
+    var nameA = a.erstellt.toUpperCase();
+    var nameB = b.erstellt.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
     }
-    let zeit = Date();
-    todos.reverse();
-    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false });
-    todos.reverse();
-    res.send("Erstellt");
-    settings.aktuelleID++;
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-});
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+    return 0;
+}
+function compareEnde(a, b) {
+    if (b.fertig == false) {
+        return a.ende - b.ende;
+    }
+    return 0;
+}
+function compareName(a, b) {
+    var nameA = a.name.toUpperCase();
+    var nameB = b.name.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
+    }
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+    return 0;
+}
+;
 exports.default = routes;
 //# sourceMappingURL=routes.js.map
