@@ -27,68 +27,8 @@ const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
 const routes = Router();
 
-function sortieren(nachWas: string) {
-    const todoSort: Todo[] = todos;
-    switch (nachWas) {
-        case "prio":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.prio - b.prio;
-                    }
-                    return 0
-                });
-                break;
-            }
-        case "name":
-            {
-                todoSort.sort(compareName);
-                break;
-            }
-        case "gruppe":
-            {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.gruppe.toUpperCase();
-                    var nameB = b.gruppe.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "id":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.id - b.id;
-                    }
-                    return 0
-                });
-                break;
-            }
-        case "ende":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.ende - b.ende;
-                    }
-                    return 0
-                });
-                break;
-            }
-        default: {
-            return todos
-        }
-    }
-    return todoSort
-}
-
 routes.get('/', (req, res) => {
-    const sortFunctions: Record<string, (a: Todo, b: Todo) => -1 | 0 | 1> = {
+    const sortFunctions: Record<string, (a: Todo, b: Todo) => number> = {
         name: compareName,
         prio: comparePrio,
         gruppe: compareGruppe,
@@ -179,6 +119,13 @@ routes.delete('/delete', (req, res) => {
     }
 })
 
+function comparePrio(a: Todo, b: Todo) {
+    if (b.fertig == false) {
+        return a.prio - b.prio;
+    }
+    return 0
+}
+
 function compareDelete(a: Todo, b: Todo) {
     if (a.delete == b.delete) {
         return 0;
@@ -189,7 +136,7 @@ function compareDelete(a: Todo, b: Todo) {
     return -1;
 }
 
-function compareFertig(a: Todo, b: Todo): 0 | 1 | -1 {
+function compareFertig(a: Todo, b: Todo) {
     if (a.fertig == b.fertig) {
         return 0;
     }
@@ -197,6 +144,44 @@ function compareFertig(a: Todo, b: Todo): 0 | 1 | -1 {
         return 1;
     }
 }
+
+function compareGruppe(a: Todo, b: Todo) {
+    var nameA = a.gruppe.toUpperCase();
+    var nameB = b.gruppe.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
+    }
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+}
+
+function compareID(a: Todo, b: Todo) {
+    if (b.fertig == false) {
+        return a.id - b.id;
+    }
+    return 0
+}
+
+function compareErstellt(a: Todo, b: Todo) {
+    var nameA = a.erstellt.toUpperCase();
+    var nameB = b.erstellt.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
+    }
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+    return 0;
+}
+
+function compareEnde(a: Todo, b: Todo) {
+    if (b.fertig == false) {
+        return a.ende - b.ende;
+    }
+    return 0
+}
+
 
 function compareName(a: Todo, b: Todo) {
     var nameA = a.name.toUpperCase();
