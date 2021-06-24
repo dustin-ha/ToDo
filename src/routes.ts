@@ -174,7 +174,7 @@ routes.get('/fertig', (req, res)  =>
     let n: number = todos.length
     while (n > 1) {
         for (let i = 0; i <= n - 2; i++) {
-            if (todos[i].fertig < todos[i + 1].fertig) {
+            if (todos[i].fertig > todos[i + 1].fertig) {
                 let hilf: Todo = todos[i]
                 todos[i] = todos[i + 1]
                 todos[i + 1] = hilf
