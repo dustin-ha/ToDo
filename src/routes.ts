@@ -16,7 +16,6 @@ interface Todo {
     prio: number;  //0 bis 3
     fertig: boolean;
     delete: boolean;
-
 }
 
 interface SettingsInterface {
@@ -43,17 +42,7 @@ function sortieren(nachWas: string) {
             }
         case "name":
             {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.name.toUpperCase();
-                    var nameB = b.name.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
-                });
+                todoSort.sort(compareName);
                 break;
             }
         case "gruppe":
@@ -93,13 +82,24 @@ function sortieren(nachWas: string) {
             }
         default: {
             return todos
-
         }
     }
     return todoSort
 }
 
 routes.get('/', (req, res) => {
+    const sortFunctions: Record<string, (a: Todo, b: Todo) => -1 | 0 | 1> = {
+        name: compareName,
+        prio: comparePrio,
+        gruppe: compareGruppe,
+    }
+
+    const record: Record<number, string> = {
+        5: "value",
+    }
+
+    res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
+
     switch (req.query.sortieren) {
         case "prio":
             {
@@ -107,7 +107,7 @@ routes.get('/', (req, res) => {
             }
         case "name":
             {
-                return res.send(sortieren("name"))
+                return res.send(todos.sort(compareName));
             }
         case "gruppe":
             {
@@ -189,7 +189,7 @@ function compareDelete(a: Todo, b: Todo) {
     return -1;
 }
 
-function compareFertig(a: Todo, b: Todo) {
+function compareFertig(a: Todo, b: Todo): 0 | 1 | -1 {
     if (a.fertig == b.fertig) {
         return 0;
     }
@@ -197,6 +197,18 @@ function compareFertig(a: Todo, b: Todo) {
         return 1;
     }
 }
+
+function compareName(a: Todo, b: Todo) {
+    var nameA = a.name.toUpperCase();
+    var nameB = b.name.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
+    }
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+    return 0;
+};
 
 routes.get('/fertig', (req, res) => {
     const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
