@@ -139,6 +139,15 @@ routes.get('/', (req, res) => {
     }
 });
 
+routes.patch('/edit', (req, res) =>
+{
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            
+        }
+    }
+})
+
 routes.delete('/delete', (req, res) =>
 {
     for (let i = 0; i < todos.length; i++) {
