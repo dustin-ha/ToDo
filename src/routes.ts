@@ -15,6 +15,7 @@ interface Todo {
     gruppe: string;
     prio: number;  //0 bis 3
     fertig: number;
+    delete: boolean;
 }
 
 const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
@@ -138,6 +139,28 @@ routes.get('/', (req, res) => {
     }
 });
 
+routes.delete('/delete', (req, res) =>
+{
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            todos[i].delete = true
+            todos.sort(compareDelete)
+            console.log(todos.pop())
+            return res.send("Gelöscht")
+        }
+    }
+})
+
+function compareDelete(a: Todo, b: Todo) {
+    if(a.delete == b.delete) {
+      return 0;
+    }
+    if(a.delete && !b.delete) {
+      return 1;
+    }
+    return -1;
+  }
+
 routes.get('/fertig', (req, res)  => 
 {
     for (let u = 0; u < todos.length; u++) {
@@ -181,7 +204,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     }
 
     let zeit: string = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0})
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0, delete: false})
     res.send("Erstellt")
     settings[0] = settings[0] + 1
     
