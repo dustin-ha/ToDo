@@ -159,8 +159,11 @@ routes.patch('/edit', (req, res) =>
             {
                 todos[i].ende = parseInt(req.query.name.toString());
             }
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        return res.send(todos[i])
         }
     }
+    return res.send("Id not found")
 })
 
 routes.delete('/delete', (req, res) =>
@@ -170,6 +173,7 @@ routes.delete('/delete', (req, res) =>
             todos[i].delete = true
             todos.sort(compareDelete)
             console.log(todos.pop())
+            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
             return res.send("Gelöscht")
         }
     }
