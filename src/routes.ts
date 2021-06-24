@@ -32,47 +32,13 @@ routes.get('/', (req, res) => {
         name: compareName,
         prio: comparePrio,
         gruppe: compareGruppe,
+        Id : compareID,
+        erstellt : compareErstellt,
+        ende: compareEnde
     }
-
-    const record: Record<number, string> = {
-        5: "value",
-    }
-
+    
     res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
 
-    switch (req.query.sortieren) {
-        case "prio":
-            {
-                return res.send(sortieren("prio"))
-            }
-        case "name":
-            {
-                return res.send(todos.sort(compareName));
-            }
-        case "gruppe":
-            {
-                return res.send(sortieren("gruppe"))
-            }
-        case "id":
-            {
-                return res.send(sortieren("id"))
-            }
-        case "ende":
-            {
-                return res.send(sortieren("ende"))
-            }
-        case "erstellt neu":
-            {
-                return res.send(sortieren("id").reverse())
-            }
-        case "erstellt alt":
-            {
-                return res.send(sortieren("id"))
-            }
-        default: {
-            return res.send(todos)
-        }
-    }
 });
 
 
