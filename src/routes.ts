@@ -2,6 +2,7 @@ import { Console, time, timeStamp } from 'console';
 import { TIMEOUT } from 'dns';
 import { Router } from 'express';
 import { Request, Response } from 'express';
+import { idText } from 'typescript';
 
 const fs = require("fs");
 
@@ -140,6 +141,17 @@ routes.patch('/edit', (req, res) =>
             if(req.query.ende != undefined)
             {
                 todos[i].ende = parseInt(req.query.ende.toString());
+            }
+            if(req.query.fertig != undefined)
+            {
+                if (req.query.fertig == "true" || req.query.fertig == "True")
+                {
+                    todos[i].fertig = true;
+                }
+                else
+                {
+                    todos[i].fertig = false;
+                }
             }
         fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
         return res.send(todos[i])
