@@ -1,26 +1,17 @@
 [
     {
+        "id": 2,
+        "name": "Noch wichtigere Aufgabe",
+        "erstellt": "Wed Jun 23 2021 14:08:24 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": 1305,
+        "gruppe": "Wichtig",
+        "prio": 3,
+        "fertig": 0
+    },
+    {
         "id": 1,
         "name": "Wichtige Aufgabe2",
         "erstellt": "Wed Jun 23 2021 14:08:23 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": "1304",
-        "gruppe": "Nicht Standard",
-        "prio": "2",
-        "fertig": 0
-    },
-    {
-        "id": 2,
-        "name": "Wichtige Aufgabe2",
-        "erstellt": "Wed Jun 23 2021 14:08:24 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": "1304",
-        "gruppe": "Nicht Standard",
-        "prio": 1,
-        "fertig": 0
-    },
-    {
-        "id": 3,
-        "name": "Wichtige Aufgabe2",
-        "erstellt": "Wed Jun 23 2021 14:08:25 GMT+0200 (Mitteleuropäische Sommerzeit)",
         "ende": "1304",
         "gruppe": "Nicht Standard",
         "prio": "2",
@@ -37,11 +28,11 @@
     },
     {
         "id": 5,
-        "name": "Wichtige Aufgabe2",
+        "name": "Noch wichtigere Aufgabe",
         "erstellt": "Wed Jun 23 2021 14:08:26 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": "1304",
-        "gruppe": "Nicht Standard",
-        "prio": "2",
+        "ende": 1305,
+        "gruppe": "Wichtig",
+        "prio": 3,
         "fertig": 0
     },
     {
@@ -187,5 +178,14 @@
         "gruppe": "Nicht Standard",
         "prio": "2",
         "fertig": 5
+    },
+    {
+        "id": 3,
+        "name": "Wichtige Aufgabe2",
+        "erstellt": "Wed Jun 23 2021 14:08:25 GMT+0200 (Mitteleuropäische Sommerzeit)",
+        "ende": "1304",
+        "gruppe": "Nicht Standard",
+        "prio": "2",
+        "fertig": 6
     }
 ]

@@ -128,7 +128,7 @@ routes.patch('/edit', (req, res) => {
                 todos[i].prio = parseInt(req.query.prio.toString());
             }
             if (req.query.ende != undefined) {
-                todos[i].ende = parseInt(req.query.name.toString());
+                todos[i].ende = parseInt(req.query.ende.toString());
             }
             fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
             return res.send(todos[i]);
