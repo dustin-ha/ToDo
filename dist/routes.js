@@ -115,6 +115,47 @@ routes.get('/', (req, res) => {
         }
     }
 });
+routes.patch('/edit', (req, res) => {
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            if (req.query.name != undefined) {
+                todos[i].name = req.query.name.toString();
+            }
+            if (req.query.gruppe != undefined) {
+                todos[i].gruppe = req.query.gruppe.toString();
+            }
+            if (req.query.prio != undefined) {
+                todos[i].prio = parseInt(req.query.prio.toString());
+            }
+            if (req.query.ende != undefined) {
+                todos[i].ende = parseInt(req.query.name.toString());
+            }
+            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+            return res.send(todos[i]);
+        }
+    }
+    return res.send("Id not found");
+});
+routes.delete('/delete', (req, res) => {
+    for (let i = 0; i < todos.length; i++) {
+        if (req.query.id == todos[i].id.toString()) {
+            todos[i].delete = true;
+            todos.sort(compareDelete);
+            console.log(todos.pop());
+            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+            return res.send("Gelöscht");
+        }
+    }
+});
+function compareDelete(a, b) {
+    if (a.delete == b.delete) {
+        return 0;
+    }
+    if (a.delete && !b.delete) {
+        return 1;
+    }
+    return -1;
+}
 routes.get('/fertig', (req, res) => {
     for (let u = 0; u < todos.length; u++) {
         if (req.query.id == todos[u].id.toString()) {
@@ -153,7 +194,7 @@ routes.post('/new', (req, res) => {
         GruppeX = req.query.gruppe;
     }
     let zeit = Date();
-    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0 });
+    todos.push({ id: settings[0], name: req.query.name, erstellt: zeit, ende: ende, gruppe: GruppeX, prio: req.query.prio, fertig: 0, delete: false });
     res.send("Erstellt");
     settings[0] = settings[0] + 1;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
