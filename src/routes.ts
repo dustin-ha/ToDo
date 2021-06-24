@@ -16,7 +16,6 @@ interface Todo {
     prio: number;  //0 bis 3
     fertig: boolean;
     delete: boolean;
-
 }
 
 interface SettingsInterface {
@@ -28,110 +27,23 @@ const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
 const routes = Router();
 
-function sortieren(nachWas: string) {
-    const todoSort: Todo[] = todos;
-    switch (nachWas) {
-        case "prio":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.prio - b.prio;
-                    }
-                    return 0
-                });
-                break;
-            }
-        case "name":
-            {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.name.toUpperCase();
-                    var nameB = b.name.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "gruppe":
-            {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.gruppe.toUpperCase();
-                    var nameB = b.gruppe.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
-                });
-                break;
-            }
-        case "id":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.id - b.id;
-                    }
-                    return 0
-                });
-                break;
-            }
-        case "ende":
-            {
-                todoSort.sort(function (a, b) {
-                    if (b.fertig == false) {
-                        return a.ende - b.ende;
-                    }
-                    return 0
-                });
-                break;
-            }
-        default: {
-            return todos
-
-        }
-    }
-    return todoSort
-}
-
 routes.get('/', (req, res) => {
-    switch (req.query.sortieren) {
-        case "prio":
-            {
-                return res.send(sortieren("prio"))
-            }
-        case "name":
-            {
-                return res.send(sortieren("name"))
-            }
-        case "gruppe":
-            {
-                return res.send(sortieren("gruppe"))
-            }
-        case "id":
-            {
-                return res.send(sortieren("id"))
-            }
-        case "ende":
-            {
-                return res.send(sortieren("ende"))
-            }
-        case "erstellt neu":
-            {
-                return res.send(sortieren("id").reverse())
-            }
-        case "erstellt alt":
-            {
-                return res.send(sortieren("id"))
-            }
-        default: {
-            return res.send(todos)
-        }
+    const sortFunctions: Record<string, (a: Todo, b: Todo) => number> = {
+        name: compareName,
+        prio: comparePrio,
+        gruppe: compareGruppe,
+        Id : compareID,
+        erstellt : compareErstellt,
+        ende: compareEnde
+    }
+
+    if(req.query.richtung == "auf")
+    {
+        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
+    }
+    else
+    {
+        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
     }
 });
 
@@ -179,24 +91,7 @@ routes.delete('/delete', (req, res) => {
     }
 })
 
-function compareDelete(a: Todo, b: Todo) {
-    if (a.delete == b.delete) {
-        return 0;
-    }
-    if (a.delete && !b.delete) {
-        return 1;
-    }
-    return -1;
-}
 
-function compareFertig(a: Todo, b: Todo) {
-    if (a.fertig == b.fertig) {
-        return 0;
-    }
-    if (a.fertig && !b.fertig) {
-        return 1;
-    }
-}
 
 routes.get('/fertig', (req, res) => {
     const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
@@ -222,5 +117,81 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
     res.send("Erstellt")
 })
+
+function comparePrio(a: Todo, b: Todo) {
+    if (b.fertig == false) {
+        return a.prio - b.prio;
+    }
+    return 0
+}
+
+function compareDelete(a: Todo, b: Todo) {
+    if (a.delete == b.delete) {
+        return 0;
+    }
+    if (a.delete && !b.delete) {
+        return 1;
+    }
+    return -1;
+}
+
+function compareFertig(a: Todo, b: Todo) {
+    if (a.fertig == b.fertig) {
+        return 0;
+    }
+    if (a.fertig && !b.fertig) {
+        return 1;
+    }
+}
+
+function compareGruppe(a: Todo, b: Todo) {
+    var nameA = a.gruppe.toUpperCase();
+    var nameB = b.gruppe.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
+    }
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+}
+
+function compareID(a: Todo, b: Todo) {
+    if (b.fertig == false) {
+        return a.id - b.id;
+    }
+    return 0
+}
+
+function compareErstellt(a: Todo, b: Todo) {
+    var nameA = a.erstellt.toUpperCase();
+    var nameB = b.erstellt.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
+    }
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+    return 0;
+}
+
+function compareEnde(a: Todo, b: Todo) {
+    if (b.fertig == false) {
+        return a.ende - b.ende;
+    }
+    return 0
+}
+
+
+function compareName(a: Todo, b: Todo) {
+    var nameA = a.name.toUpperCase();
+    var nameB = b.name.toUpperCase();
+    if (nameA < nameB && b.fertig == false) {
+        return -1;
+    }
+    if (nameA > nameB && b.fertig == false) {
+        return 1;
+    }
+    return 0;
+};
 
 export default routes;
