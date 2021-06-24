@@ -5,24 +5,22 @@ const fs = require("fs");
 const settings = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 const todos = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 const routes = express_1.Router();
-routes.get('/', (req, res) => {
-    switch (req.query.sortieren) {
+function sortieren(nachWas) {
+    const todoSort = todos;
+    switch (nachWas) {
         case "prio":
             {
-                const todoPrio = todos;
-                todoPrio.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     if (b.fertig == false) {
                         return a.prio - b.prio;
                     }
                     return 0;
                 });
-                return res.send(todoPrio);
                 break;
             }
         case "name":
             {
-                const todoName = todos;
-                todoName.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     var nameA = a.name.toUpperCase();
                     var nameB = b.name.toUpperCase();
                     if (nameA < nameB && b.fertig == false) {
@@ -33,13 +31,11 @@ routes.get('/', (req, res) => {
                     }
                     return 0;
                 });
-                return res.send(todoName);
                 break;
             }
         case "gruppe":
             {
-                const todoGruppe = todos;
-                todoGruppe.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     var nameA = a.gruppe.toUpperCase();
                     var nameB = b.gruppe.toUpperCase();
                     if (nameA < nameB && b.fertig == false) {
@@ -50,37 +46,31 @@ routes.get('/', (req, res) => {
                     }
                     return 0;
                 });
-                return res.send(todoGruppe);
                 break;
             }
         case "id":
             {
-                const todoID = todos;
-                todoID.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     if (b.fertig == false) {
                         return a.id - b.id;
                     }
                     return 0;
                 });
-                return res.send(todoID);
                 break;
             }
         case "ende":
             {
-                const todoEnde = todos;
-                todoEnde.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     if (b.fertig == false) {
                         return a.ende - b.ende;
                     }
                     return 0;
                 });
-                return res.send(todoEnde);
                 break;
             }
         case "erstellt":
             {
-                const todoErstellt = todos;
-                todoErstellt.sort(function (a, b) {
+                todoSort.sort(function (a, b) {
                     var nameA = a.erstellt.toUpperCase();
                     var nameB = b.erstellt.toUpperCase();
                     if (nameA < nameB && b.fertig == false) {
@@ -91,12 +81,42 @@ routes.get('/', (req, res) => {
                     }
                     return 0;
                 });
-                return res.send(todoErstellt);
                 break;
             }
         default: {
+            return todos;
+        }
+    }
+    return todoSort;
+}
+routes.get('/', (req, res) => {
+    switch (req.query.sortieren) {
+        case "prio":
+            {
+                return res.send(sortieren("prio"));
+            }
+        case "name":
+            {
+                return res.send(sortieren("name"));
+            }
+        case "gruppe":
+            {
+                return res.send(sortieren("gruppe"));
+            }
+        case "id":
+            {
+                return res.send(sortieren("id"));
+            }
+        case "ende":
+            {
+                return res.send(sortieren("ende"));
+            }
+        case "erstellt":
+            {
+                return res.send(sortieren("erstellt"));
+            }
+        default: {
             return res.send(todos);
-            break;
         }
     }
 });
@@ -122,6 +142,7 @@ routes.patch('/edit', (req, res) => {
                 else {
                     todos[i].fertig = false;
                 }
+                todos.sort(compareFertig);
             }
             fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
             return res.send(todos[i]);
@@ -181,7 +202,9 @@ routes.post('/new', (req, res) => {
         GruppeX = req.query.gruppe;
     }
     let zeit = Date();
+    todos.reverse();
     todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false });
+    todos.reverse();
     res.send("Erstellt");
     settings.aktuelleID++;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));

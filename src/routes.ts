@@ -19,7 +19,7 @@ interface Todo {
 
 }
 
-interface SettingsInterface{
+interface SettingsInterface {
     aktuelleID: number;
 }
 
@@ -72,7 +72,7 @@ function sortieren(nachWas: string) {
                 break;
             }
         case "id":
-            { 
+            {
                 todoSort.sort(function (a, b) {
                     if (b.fertig == false) {
                         return a.id - b.id;
@@ -88,21 +88,6 @@ function sortieren(nachWas: string) {
                         return a.ende - b.ende;
                     }
                     return 0
-                });
-                break;
-            }
-        case "erstellt":
-            {
-                todoSort.sort(function (a, b) {
-                    var nameA = a.erstellt.toUpperCase();
-                    var nameB = b.erstellt.toUpperCase();
-                    if (nameA < nameB && b.fertig == false) {
-                        return -1;
-                    }
-                    if (nameA > nameB && b.fertig == false) {
-                        return 1;
-                    }
-                    return 0;
                 });
                 break;
             }
@@ -136,9 +121,13 @@ routes.get('/', (req, res) => {
             {
                 return res.send(sortieren("ende"))
             }
-        case "erstellt":
+        case "erstellt neu":
             {
-                return res.send(sortieren("erstellt"))
+                return res.send(sortieren("id").reverse())
+            }
+        case "erstellt alt":
+            {
+                return res.send(sortieren("id"))
             }
         default: {
             return res.send(todos)
@@ -237,7 +226,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
 
     let zeit: string = Date();
     todos.reverse()
-    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false})
+    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: parseInt(req.query.ende.toString()), gruppe: GruppeX, prio: parseInt(req.query.prio.toString()), fertig: false, delete: false })
     todos.reverse()
     res.send("Erstellt")
     settings.aktuelleID++;
