@@ -32,63 +32,60 @@ routes.get('/', (req, res) => {
         name: compareName,
         prio: comparePrio,
         gruppe: compareGruppe,
-        Id : compareID,
-        erstellt : compareErstellt,
+        Id: compareID,
+        erstellt: compareErstellt,
         ende: compareEnde
     }
 
-    if(req.query.richtung == "auf")
-    {
+    if (req.query.richtung == "auf") {
         res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
     }
-    else
-    {
+    else {
         res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
     }
 });
 
 
 routes.patch('/edit', (req, res) => {
-    for (let i = 0; i < todos.length; i++) {
-        if (req.query.id == todos[i].id.toString()) {
-            if (req.query.name != undefined) {
-                todos[i].name = req.query.name.toString();
-            }
-            if (req.query.gruppe != undefined) {
-                todos[i].gruppe = req.query.gruppe.toString();
-            }
-            if (req.query.prio != undefined) {
-                todos[i].prio = parseInt(req.query.prio.toString());
-            }
-            if (req.query.ende != undefined) {
-                todos[i].ende = parseInt(req.query.ende.toString());
-            }
-            if (req.query.fertig != undefined) {
-                if (req.query.fertig == "true" || req.query.fertig == "True") {
-                    todos[i].fertig = true;
-                }
-                else {
-                    todos[i].fertig = false;
-                }
-                todos.sort(compareFertig);
-            }
-            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-            return res.send(todos[i]);
+    const todoF: Todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    if (todoF != undefined) {
+        if (req.query.name != undefined) {
+            todoF.name = req.query.name.toString();
         }
+        if (req.query.gruppe != undefined) {
+            todoF.gruppe = req.query.gruppe.toString();
+        }
+        if (req.query.prio != undefined) {
+            todoF.prio = parseInt(req.query.prio.toString());
+        }
+        if (req.query.ende != undefined) {
+            todoF.ende = parseInt(req.query.ende.toString());
+        }
+        if (req.query.fertig != undefined) {
+            if (req.query.fertig == "true" || req.query.fertig == "True") {
+                todoF.fertig = true;
+            }
+            else {
+                todoF.fertig = false;
+            }
+            todos.sort(compareFertig);
+        }
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        return res.send(todoF);
     }
     return res.send("Id not found")
 })
 
 routes.delete('/delete', (req, res) => {
-    for (let i = 0; i < todos.length; i++) {
-        if (req.query.id == todos[i].id.toString()) {
-            todos[i].delete = true
-            todos.sort(compareDelete)
-            console.log(todos.pop())
-            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-            return res.send("Gelöscht")
-        }
+    const todoF: Todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    if (todoF != undefined) {
+        todoF.delete = true
+        todos.sort(compareDelete)
+        const del: Todo = todos.pop()
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        return res.send(del)
     }
+    return res.send("Id not found")
 })
 
 
@@ -111,7 +108,7 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     todos.reverse()
     todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false })
     todos.reverse()
-    
+
     settings.aktuelleID++;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
