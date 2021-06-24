@@ -118,13 +118,21 @@ routes.get('/', (req, res) => {
     }
 });
 
+function compareFertig(a: Todo, b: Todo) {
+    if(a.fertig == b.fertig) {
+      return 0;
+    }
+    if(a.fertig && !b.fertig) {
+      return 1;
+    }
+    return -1;
+  }
+
 routes.get('/fertig', (req, res) => {
     const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    todo.fertig == true
+    todo.fertig = true
     settings[1]++
-    todos.sort(function (a, b) {
-        return a.ende - b.ende;
-    });
+    todos.sort(compareFertig)
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
     fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
     return res.send(todos)
