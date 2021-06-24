@@ -1,12 +1,1 @@
-[
-    {
-        "id": 1,
-        "name": "Noch wichtigere Aufgabe",
-        "erstellt": "Thu Jun 24 2021 11:26:04 GMT+0200 (Mitteleuropäische Sommerzeit)",
-        "ende": 1305,
-        "gruppe": "Wichtig",
-        "prio": 3,
-        "fertig": true,
-        "delete": false
-    }
-]
+[]
