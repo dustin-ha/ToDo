@@ -1,22 +1,17 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const routes_1 = __importDefault(require("./routes"));
+import express from 'express';
+import routes from './routes.js';
 class App {
     constructor() {
-        this.server = express_1.default();
+        this.server = express();
         this.middlewares();
         this.routes();
     }
     middlewares() {
-        this.server.use(express_1.default.json());
+        this.server.use(express.json());
     }
     routes() {
-        this.server.use(routes_1.default);
+        this.server.use(routes);
     }
 }
-exports.default = new App().server;
+export default new App().server;
 //# sourceMappingURL=app.js.map

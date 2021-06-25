@@ -2,9 +2,10 @@
   "name": "ToDo",
   "version": "1.0.0",
   "main": "index.js",
+  "type":"module",
   "scripts": {
     "build": "tsc --project ./",
-    "start:dev": "nodemon src/server.ts",
+    "start:dev": "tsc --outdir ./dist && node ./dist/server.js",
     "start:prod": "node dist/server.js"
   },
   "license": "MIT",

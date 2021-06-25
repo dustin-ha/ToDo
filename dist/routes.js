@@ -1,10 +1,17 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = require("express");
-const fs = require("fs");
+import { Router } from 'express';
+import Mongo from 'mongodb';
+import fs from "fs";
+const mongoClient = new Mongo.MongoClient("mongodb://localhost:27017");
+const connection = await mongoClient.connect();
+const db = connection.db("ToDo");
+const toDo = db.collection("todos");
+console.log(await toDo.insert({ id: 1, name: "" }));
+console.log(await toDo.findOne({ id: 1, name: "" }));
+await toDo.updateMany({ id: 1 }, { $set: { name: "Update2" } });
+console.log(await toDo.find().toArray());
 const settings = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 const todos = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
-const routes = express_1.Router();
+const routes = Router();
 routes.get('/', (req, res) => {
     var _a, _b;
     const sortFunctions = {
@@ -22,46 +29,46 @@ routes.get('/', (req, res) => {
         res.send(todos.sort(sortFunctions[(_b = req.query.sortieren.toString()) !== null && _b !== void 0 ? _b : "name"]).reverse());
     }
 });
-routes.patch('/edit', (req, res) => {
-    for (let i = 0; i < todos.length; i++) {
-        if (req.query.id == todos[i].id.toString()) {
-            if (req.query.name != undefined) {
-                todos[i].name = req.query.name.toString();
-            }
-            if (req.query.gruppe != undefined) {
-                todos[i].gruppe = req.query.gruppe.toString();
-            }
-            if (req.query.prio != undefined) {
-                todos[i].prio = parseInt(req.query.prio.toString());
-            }
-            if (req.query.ende != undefined) {
-                todos[i].ende = parseInt(req.query.ende.toString());
-            }
-            if (req.query.fertig != undefined) {
-                if (req.query.fertig == "true" || req.query.fertig == "True") {
-                    todos[i].fertig = true;
-                }
-                else {
-                    todos[i].fertig = false;
-                }
-                todos.sort(compareFertig);
-            }
-            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-            return res.send(todos[i]);
+routes.patch('/edit', async (req, res) => {
+    const todoF = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    //await mongo()
+    if (todoF != undefined) {
+        if (req.query.name != undefined) {
+            todoF.name = req.query.name.toString();
         }
+        if (req.query.gruppe != undefined) {
+            todoF.gruppe = req.query.gruppe.toString();
+        }
+        if (req.query.prio != undefined) {
+            todoF.prio = parseInt(req.query.prio.toString());
+        }
+        if (req.query.ende != undefined) {
+            todoF.ende = parseInt(req.query.ende.toString());
+        }
+        if (req.query.fertig != undefined) {
+            if (req.query.fertig == "true" || req.query.fertig == "True") {
+                todoF.fertig = true;
+            }
+            else {
+                todoF.fertig = false;
+            }
+            todos.sort(compareFertig);
+        }
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        return res.send(todoF);
     }
     return res.send("Id not found");
 });
 routes.delete('/delete', (req, res) => {
-    for (let i = 0; i < todos.length; i++) {
-        if (req.query.id == todos[i].id.toString()) {
-            todos[i].delete = true;
-            todos.sort(compareDelete);
-            console.log(todos.pop());
-            fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-            return res.send("Gelöscht");
-        }
+    const todoF = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    if (todoF != undefined) {
+        todoF.delete = true;
+        todos.sort(compareDelete);
+        const del = todos.pop();
+        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
+        return res.send(del);
     }
+    return res.send("Id not found");
 });
 routes.get('/fertig', (req, res) => {
     const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
@@ -153,5 +160,5 @@ function compareName(a, b) {
     return 0;
 }
 ;
-exports.default = routes;
+export default routes;
 //# sourceMappingURL=routes.js.map
