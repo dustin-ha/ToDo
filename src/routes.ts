@@ -22,10 +22,6 @@ const connection = await mongoClient.connect()
 const db = connection.db("ToDo")
 const toDo = db.collection<Todo>("todos")
 
-console.log(await toDo.findOne({ id: 1, name: "" }))
-await toDo.updateMany({ id: 1 }, { $set: { name: "Update2" } })
-console.log(await toDo.find().toArray())
-
 interface SettingsInterface {
     aktuelleID: number;
 }
@@ -66,18 +62,9 @@ routes.patch('/edit', async (req, res) => {
 })
 
 routes.delete('/delete', (req, res) => {
-    const todoF: Todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    if (todoF != undefined) {
-        todoF.delete = true
-        todos.sort(compareDelete)
-        const del: Todo = todos.pop()
-        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-        return res.send(del)
-    }
-    return res.send("Id not found")
+    toDo.deleteOne({id: parseInt(req.query.id.toString())})
+    return res.send("Gelöscht")
 })
-
-
 
 routes.get('/fertig', (req, res) => {
     const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
