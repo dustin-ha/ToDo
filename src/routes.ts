@@ -6,9 +6,6 @@ import Mongo from 'mongodb';
 import { idText } from 'typescript';
 import fs from "fs";
 
-//const fs = require("fs");
-//const settings: number[] = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
-
 interface Todo {
     id: number;
     name: string;
@@ -23,19 +20,12 @@ interface Todo {
 const mongoClient = new Mongo.MongoClient("mongodb://localhost:27017")
 const connection = await mongoClient.connect()
 const db = connection.db("ToDo")
-const toDo = db.collection("todos")
-
-console.log(await toDo.insert({ id: 1, name: "" }))
-console.log(await toDo.findOne({ id: 1, name: "" }))
-await toDo.updateMany({ id: 1 }, { $set: { name: "Update2" } })
-console.log(await toDo.find().toArray())
+const toDo = db.collection<Todo>("todos")
 
 interface SettingsInterface {
     aktuelleID: number;
 }
-
 const settings: SettingsInterface = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
-const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
 const routes = Router();
 
@@ -61,49 +51,23 @@ routes.get('/', async (req, res) => {
 
 
 routes.patch('/edit', async (req, res) => {
-    const todoF: Todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    //await mongo()
-    if (todoF != undefined) {
-        if (req.query.name != undefined) {
-            todoF.name = req.query.name.toString();
-        }
-        if (req.query.gruppe != undefined) {
-            todoF.gruppe = req.query.gruppe.toString();
-        }
-        if (req.query.prio != undefined) {
-            todoF.prio = parseInt(req.query.prio.toString());
-        }
-        if (req.query.ende != undefined) {
-            todoF.ende = parseInt(req.query.ende.toString());
-        }
-        if (req.query.fertig != undefined) {
-            if (req.query.fertig == "true" || req.query.fertig == "True") {
-                todoF.fertig = true;
-            }
-            else {
-                todoF.fertig = false;
-            }
-            todos.sort(compareFertig);
-        }
-        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-        return res.send(todoF);
+    const todoX = await toDo.findOne({ id: parseInt(req.query.id.toString()) })
+    const name: string = req.query.name.toString() ?? todoX.name
+    const gruppe: string = req.query.gruppe.toString() ?? todoX.gruppe
+    const prio: number = parseInt(req.query.prio.toString()) ?? todoX.prio
+    const ende: number = parseInt(req.query.name.toString()) ?? todoX.ende
+    let fertig = false;
+    if (req.query.fertig == "true" || req.query.fertig == "True") {
+        fertig = true;
     }
-    return res.send("Id not found")
+    await toDo.updateOne({ id: parseInt(req.query.id.toString()) }, { $set: { name: name, gruppe: gruppe, prio: prio, ende: ende, fertig: fertig } })
+    return res.send("Bearbeitet")
 })
 
 routes.delete('/delete', (req, res) => {
-    const todoF: Todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    if (todoF != undefined) {
-        todoF.delete = true
-        todos.sort(compareDelete)
-        const del: Todo = todos.pop()
-        fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-        return res.send(del)
-    }
-    return res.send("Id not found")
+    toDo.deleteOne({id: parseInt(req.query.id.toString())})
+    return res.send("Gelöscht")
 })
-
-
 
 routes.get('/fertig', async (req, res) => {
     await toDo.updateOne({ id: parseInt(req.query.id.toString()) }, { $set: { fertig: true } })
@@ -112,19 +76,14 @@ routes.get('/fertig', async (req, res) => {
     return res.send(gottodos)
 })
 
-routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
+routes.post('/new', async (req: Request<unknown, unknown, unknown, Todo>, res) => {
     const ende: number = req.query.ende ?? 0
     const gruppe: string = req.query.gruppe.toString() ?? "Standard"
     const zeit: string = Date();
     const prio: number = req.query.prio ?? 0
-
-    todos.reverse()
-    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false })
-    todos.reverse()
-
+    await toDo.insert({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false })
     settings.aktuelleID++;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
     res.send("Erstellt")
 })
 
