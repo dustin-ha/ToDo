@@ -2,6 +2,7 @@ import { Console, time, timeStamp } from 'console';
 import { TIMEOUT } from 'dns';
 import { Router } from 'express';
 import { Request, Response } from 'express';
+import { MongoClient } from 'mongodb';
 import { idText } from 'typescript';
 
 const fs = require("fs");
@@ -18,6 +19,15 @@ interface Todo {
     delete: boolean;
 }
 
+async function mongo() {
+    const mongoClient = new MongoClient("mongodb://localhost:27017")
+    const connection = await mongoClient.connect()
+    const db = connection.db("ToDo")
+    const toDo = db.collection<Todo>("todos")
+
+    console.log(await toDo.insert({ id: 1, name: "" }))
+
+}
 interface SettingsInterface {
     aktuelleID: number;
 }
@@ -46,8 +56,9 @@ routes.get('/', (req, res) => {
 });
 
 
-routes.patch('/edit', (req, res) => {
+routes.patch('/edit', async (req, res) => {
     const todoF: Todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
+    await mongo()
     if (todoF != undefined) {
         if (req.query.name != undefined) {
             todoF.name = req.query.name.toString();
