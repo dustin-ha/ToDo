@@ -6,9 +6,6 @@ import Mongo from 'mongodb';
 import { idText } from 'typescript';
 import fs from "fs";
 
-//const fs = require("fs");
-//const settings: number[] = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
-
 interface Todo {
     id: number;
     name: string;
@@ -23,9 +20,9 @@ interface Todo {
 const mongoClient = new Mongo.MongoClient("mongodb://localhost:27017")
 const connection = await mongoClient.connect()
 const db = connection.db("ToDo")
-const toDo = db.collection("todos")
+const toDo = db.collection<Todo>("todos")
 
-console.log(await toDo.insert({ id: 1, name: "" }))
+console.log(await toDo.insert({id: }))
 console.log(await toDo.findOne({id: 1, name: ""}))
 await toDo.updateMany({id: 1}, {$set: {name: "Update2"}})
 console.log(await toDo.find().toArray())
@@ -33,12 +30,9 @@ console.log(await toDo.find().toArray())
 interface SettingsInterface {
     aktuelleID: number;
 }
-
 const settings: SettingsInterface = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
-const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
 const routes = Router();
-
 routes.get('/', (req, res) => {
     const sortFunctions: Record<string, (a: Todo, b: Todo) => number> = {
         name: compareName,
@@ -59,8 +53,6 @@ routes.get('/', (req, res) => {
 
 
 routes.patch('/edit', async (req, res) => {
-    const todoF: Todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    //await mongo()
     if (todoF != undefined) {
         if (req.query.name != undefined) {
             todoF.name = req.query.name.toString();
@@ -117,14 +109,9 @@ routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
     const gruppe: string = req.query.gruppe.toString() ?? "Standard"
     const zeit: string = Date();
     const prio: number = req.query.prio ?? 0
-
-    todos.reverse()
-    todos.push({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false })
-    todos.reverse()
-
+    await toDo.insert({id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false})
     settings.aktuelleID++;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
     res.send("Erstellt")
 })
 
