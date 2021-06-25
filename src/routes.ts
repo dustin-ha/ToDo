@@ -26,8 +26,8 @@ const db = connection.db("ToDo")
 const toDo = db.collection("todos")
 
 console.log(await toDo.insert({ id: 1, name: "" }))
-console.log(await toDo.findOne({id: 1, name: ""}))
-await toDo.updateMany({id: 1}, {$set: {name: "Update2"}})
+console.log(await toDo.findOne({ id: 1, name: "" }))
+await toDo.updateMany({ id: 1 }, { $set: { name: "Update2" } })
 console.log(await toDo.find().toArray())
 
 interface SettingsInterface {
@@ -39,7 +39,7 @@ const todos: Todo[] = JSON.parse(fs.readFileSync("./todos.json", "utf8"));
 
 const routes = Router();
 
-routes.get('/', (req, res) => {
+routes.get('/', async (req, res) => {
     const sortFunctions: Record<string, (a: Todo, b: Todo) => number> = {
         name: compareName,
         prio: comparePrio,
@@ -49,11 +49,13 @@ routes.get('/', (req, res) => {
         ende: compareEnde
     }
 
+    const todossort: Todo[] = await toDo.find().toArray()
+    todossort.sort(compareFertig);
     if (req.query.richtung == "auf") {
-        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
+        res.send(todossort.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
     }
     else {
-        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
+        res.send(todossort.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
     }
 });
 
@@ -103,13 +105,11 @@ routes.delete('/delete', (req, res) => {
 
 
 
-routes.get('/fertig', (req, res) => {
-    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    todo.fertig = true
-    todos.sort(compareFertig)
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-    return res.send(todos)
+routes.get('/fertig', async (req, res) => {
+    await toDo.updateOne({ id: parseInt(req.query.id.toString()) }, { $set: { fertig: true } })
+    const gottodos: Todo[] = await toDo.find().toArray()
+    gottodos.sort(compareFertig);
+    return res.send(gottodos)
 })
 
 routes.post('/new', (req: Request<unknown, unknown, unknown, Todo>, res) => {
