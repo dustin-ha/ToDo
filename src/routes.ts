@@ -28,7 +28,8 @@ interface SettingsInterface {
 const settings: SettingsInterface = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 
 const routes = Router();
-routes.get('/', (req, res) => {
+
+routes.get('/', async (req, res) => {
     const sortFunctions: Record<string, (a: Todo, b: Todo) => number> = {
         name: compareName,
         prio: comparePrio,
@@ -38,11 +39,13 @@ routes.get('/', (req, res) => {
         ende: compareEnde
     }
 
+    const todossort: Todo[] = await toDo.find().toArray()
+    todossort.sort(compareFertig);
     if (req.query.richtung == "auf") {
-        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
+        res.send(todossort.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
     }
     else {
-        res.send(todos.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
+        res.send(todossort.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
     }
 });
 
@@ -66,13 +69,11 @@ routes.delete('/delete', (req, res) => {
     return res.send("Gelöscht")
 })
 
-routes.get('/fertig', (req, res) => {
-    const todo = todos.find((todo) => todo.id == parseInt(req.query.id.toString()));
-    todo.fertig = true
-    todos.sort(compareFertig)
-    fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
-    fs.writeFileSync("./todos.json", JSON.stringify(todos, null, 4));
-    return res.send(todos)
+routes.get('/fertig', async (req, res) => {
+    await toDo.updateOne({ id: parseInt(req.query.id.toString()) }, { $set: { fertig: true } })
+    const gottodos: Todo[] = await toDo.find().toArray()
+    gottodos.sort(compareFertig);
+    return res.send(gottodos)
 })
 
 routes.post('/new', async (req: Request<unknown, unknown, unknown, Todo>, res) => {
