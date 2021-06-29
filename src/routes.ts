@@ -38,15 +38,17 @@ routes.get('/', async (req, res) => {
         erstellt: compareErstellt,
         ende: compareEnde
     }
-
+    console.log("Called")
     const todossort: Todo[] = await toDo.find().toArray()
     todossort.sort(compareFertig);
+    const sort = req.query.sortieren ?? "name"
     if (req.query.richtung == "auf") {
-        res.send(todossort.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]))
+        res.send(todossort.sort(sortFunctions[sort.toString()]))
     }
     else {
-        res.send(todossort.sort(sortFunctions[req.query.sortieren.toString() ?? "name"]).reverse())
+        res.send(todossort.sort(sortFunctions[sort.toString()]).reverse())
     }
+
 });
 
 
@@ -65,7 +67,7 @@ routes.patch('/edit', async (req, res) => {
 })
 
 routes.delete('/delete', (req, res) => {
-    toDo.deleteOne({id: parseInt(req.query.id.toString())})
+    toDo.deleteOne({ id: parseInt(req.query.id.toString()) })
     return res.send("Gelöscht")
 })
 

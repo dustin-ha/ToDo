@@ -8,7 +8,7 @@ const toDo = db.collection("todos");
 const settings = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 const routes = Router();
 routes.get('/', async (req, res) => {
-    var _a, _b;
+    var _a;
     const sortFunctions = {
         name: compareName,
         prio: comparePrio,
@@ -17,13 +17,15 @@ routes.get('/', async (req, res) => {
         erstellt: compareErstellt,
         ende: compareEnde
     };
+    console.log("Called");
     const todossort = await toDo.find().toArray();
     todossort.sort(compareFertig);
+    const sort = (_a = req.query.sortieren) !== null && _a !== void 0 ? _a : "name";
     if (req.query.richtung == "auf") {
-        res.send(todossort.sort(sortFunctions[(_a = req.query.sortieren.toString()) !== null && _a !== void 0 ? _a : "name"]));
+        res.send(todossort.sort(sortFunctions[sort.toString()]));
     }
     else {
-        res.send(todossort.sort(sortFunctions[(_b = req.query.sortieren.toString()) !== null && _b !== void 0 ? _b : "name"]).reverse());
+        res.send(todossort.sort(sortFunctions[sort.toString()]).reverse());
     }
 });
 routes.patch('/edit', async (req, res) => {

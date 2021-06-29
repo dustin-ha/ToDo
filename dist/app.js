@@ -1,3 +1,4 @@
+import cors from 'cors';
 import express from 'express';
 import routes from './routes.js';
 class App {
@@ -7,6 +8,11 @@ class App {
         this.routes();
     }
     middlewares() {
+        const allowedOrigins = ['http://localhost:3000'];
+        const options = {
+            origin: allowedOrigins
+        };
+        this.server.use(cors(options));
         this.server.use(express.json());
     }
     routes() {
