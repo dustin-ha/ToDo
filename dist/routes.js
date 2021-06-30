@@ -56,7 +56,7 @@ routes.post('/new', async (req, res) => {
     var _a, _b, _c;
     const ende = (_a = req.query.ende) !== null && _a !== void 0 ? _a : 0;
     const gruppe = (_b = req.query.gruppe) !== null && _b !== void 0 ? _b : "Standard";
-    const zeit = Date();
+    const zeit = "Jetzt"; //Date();
     const prio = (_c = req.query.prio) !== null && _c !== void 0 ? _c : 0;
     await toDo.insert({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false });
     settings.aktuelleID++;
