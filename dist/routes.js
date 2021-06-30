@@ -58,6 +58,7 @@ routes.post('/new', async (req, res) => {
     const gruppe = (_b = req.query.gruppe) !== null && _b !== void 0 ? _b : "Standard";
     const zeit = "Jetzt"; //Date();
     const prio = (_c = req.query.prio) !== null && _c !== void 0 ? _c : 0;
+    console.log(gruppe);
     await toDo.insert({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false });
     settings.aktuelleID++;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
