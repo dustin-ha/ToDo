@@ -88,8 +88,8 @@ function compareFertig(a, b) {
     }
 }
 function compareGruppe(a, b) {
-    var nameA = a.gruppe.toUpperCase();
-    var nameB = b.gruppe.toUpperCase();
+    var nameA = a.gruppe; //.toUpperCase();
+    var nameB = b.gruppe; //.toUpperCase();
     if (nameA < nameB && b.fertig == false) {
         return -1;
     }
@@ -104,8 +104,8 @@ function compareID(a, b) {
     return 0;
 }
 function compareErstellt(a, b) {
-    var nameA = a.erstellt.toUpperCase();
-    var nameB = b.erstellt.toUpperCase();
+    var nameA = a.erstellt; //.toUpperCase();
+    var nameB = b.erstellt; //.toUpperCase();
     if (nameA < nameB && b.fertig == false) {
         return -1;
     }
@@ -121,8 +121,8 @@ function compareEnde(a, b) {
     return 0;
 }
 function compareName(a, b) {
-    var nameA = a.name.toUpperCase();
-    var nameB = b.name.toUpperCase();
+    var nameA = a.name; //.toUpperCase();
+    var nameB = b.name; //.toUpperCase();
     if (nameA < nameB && b.fertig == false) {
         return -1;
     }

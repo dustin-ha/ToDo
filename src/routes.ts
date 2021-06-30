@@ -84,8 +84,6 @@ routes.post('/new', async (req: Request<unknown, unknown, unknown, Todo>, res) =
     const zeit: string = "Jetzt"//Date();
     const prio: number = req.query.prio ?? 0
     
-    console.log(gruppe)
-
     await toDo.insert({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false })
     settings.aktuelleID++;
     fs.writeFileSync("./settings.json", JSON.stringify(settings, null, 4));
@@ -119,8 +117,8 @@ function compareFertig(a: Todo, b: Todo) {
 }
 
 function compareGruppe(a: Todo, b: Todo) {
-    var nameA = a.gruppe.toUpperCase();
-    var nameB = b.gruppe.toUpperCase();
+    var nameA = a.gruppe//.toUpperCase();
+    var nameB = b.gruppe//.toUpperCase();
     if (nameA < nameB && b.fertig == false) {
         return -1;
     }
@@ -137,8 +135,8 @@ function compareID(a: Todo, b: Todo) {
 }
 
 function compareErstellt(a: Todo, b: Todo) {
-    var nameA = a.erstellt.toUpperCase();
-    var nameB = b.erstellt.toUpperCase();
+    var nameA = a.erstellt//.toUpperCase();
+    var nameB = b.erstellt//.toUpperCase();
     if (nameA < nameB && b.fertig == false) {
         return -1;
     }
@@ -157,8 +155,8 @@ function compareEnde(a: Todo, b: Todo) {
 
 
 function compareName(a: Todo, b: Todo) {
-    var nameA = a.name.toUpperCase();
-    var nameB = b.name.toUpperCase();
+    var nameA = a.name//.toUpperCase();
+    var nameB = b.name//.toUpperCase();
     if (nameA < nameB && b.fertig == false) {
         return -1;
     }
