@@ -80,7 +80,7 @@ routes.get('/fertig', async (req, res) => {
 
 routes.post('/new', async (req: Request<unknown, unknown, unknown, Todo>, res) => {
     const ende: number = req.query.ende ?? 0
-    const gruppe: string = req.query.gruppe.toString() ?? "Standard"
+    const gruppe: string = req.query.gruppe ?? "Standard"
     const zeit: string = Date();
     const prio: number = req.query.prio ?? 0
     await toDo.insert({ id: settings.aktuelleID, name: req.query.name, erstellt: zeit, ende: ende, gruppe: gruppe, prio: prio, fertig: false, delete: false })
