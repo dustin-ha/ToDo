@@ -42,6 +42,7 @@ routes.get('/', async (req, res) => {
     const todossort: Todo[] = await toDo.find().toArray()
     todossort.sort(compareFertig);
     const sort = req.query.sortieren ?? "name"
+    const richt = req.query.richtung ?? "auf"
     if (req.query.richtung == "auf") {
         res.send(todossort.sort(sortFunctions[sort.toString()]))
     }

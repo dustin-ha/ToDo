@@ -8,7 +8,7 @@ const toDo = db.collection("todos");
 const settings = JSON.parse(fs.readFileSync("./settings.json", "utf8"));
 const routes = Router();
 routes.get('/', async (req, res) => {
-    var _a;
+    var _a, _b;
     const sortFunctions = {
         name: compareName,
         prio: comparePrio,
@@ -21,6 +21,7 @@ routes.get('/', async (req, res) => {
     const todossort = await toDo.find().toArray();
     todossort.sort(compareFertig);
     const sort = (_a = req.query.sortieren) !== null && _a !== void 0 ? _a : "name";
+    const richt = (_b = req.query.richtung) !== null && _b !== void 0 ? _b : "auf";
     if (req.query.richtung == "auf") {
         res.send(todossort.sort(sortFunctions[sort.toString()]));
     }
