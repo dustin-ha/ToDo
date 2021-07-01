@@ -55,11 +55,17 @@ routes.get('/', async (req, res) => {
 
 routes.patch('/edit', async (req, res) => {
     const todoX = await toDo.findOne({ id: parseInt(req.query.id.toString()) })
-    const name: string = req.query.name.toString() ?? todoX.name
-    const gruppe: string = req.query.gruppe.toString() ?? todoX.gruppe
-    const prio: number = parseInt(req.query.prio.toString()) ?? todoX.prio
-    const ende: number = parseInt(req.query.name.toString()) ?? todoX.ende
-    let fertig = false;
+    let name: string = todoX.name
+    let gruppe: string = todoX.gruppe 
+    let prio: number = todoX.prio
+    let ende: number = todoX.ende
+    let fertig = todoX.fertig;
+
+    name = req.query.name?.toString()
+    gruppe = req.query.gruppe?.toString()
+    prio = parseInt(req.query.prio?.toString())
+    ende = parseInt(req.query.ende?.toString())
+
     if (req.query.fertig == "true" || req.query.fertig == "True") {
         fertig = true;
     }
