@@ -32,14 +32,19 @@ routes.get('/', async (req, res) => {
 routes.patch('/edit', async (req, res) => {
     var _a, _b, _c, _d;
     const todoX = await toDo.findOne({ id: parseInt(req.query.id.toString()) });
-    const name = (_a = req.query.name.toString()) !== null && _a !== void 0 ? _a : todoX.name;
-    const gruppe = (_b = req.query.gruppe.toString()) !== null && _b !== void 0 ? _b : todoX.gruppe;
-    const prio = (_c = parseInt(req.query.prio.toString())) !== null && _c !== void 0 ? _c : todoX.prio;
-    const ende = (_d = parseInt(req.query.name.toString())) !== null && _d !== void 0 ? _d : todoX.ende;
-    let fertig = false;
+    let name = todoX.name;
+    let gruppe = todoX.gruppe;
+    let prio = todoX.prio;
+    let ende = todoX.ende;
+    let fertig = todoX.fertig;
+    name = (_a = req.query.name) === null || _a === void 0 ? void 0 : _a.toString();
+    gruppe = (_b = req.query.gruppe) === null || _b === void 0 ? void 0 : _b.toString();
+    prio = parseInt((_c = req.query.prio) === null || _c === void 0 ? void 0 : _c.toString());
+    ende = parseInt((_d = req.query.ende) === null || _d === void 0 ? void 0 : _d.toString());
     if (req.query.fertig == "true" || req.query.fertig == "True") {
         fertig = true;
     }
+    console.log(name + gruppe + prio + ende + fertig);
     await toDo.updateOne({ id: parseInt(req.query.id.toString()) }, { $set: { name: name, gruppe: gruppe, prio: prio, ende: ende, fertig: fertig } });
     return res.send("Bearbeitet");
 });
