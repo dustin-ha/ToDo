@@ -44,6 +44,7 @@ routes.patch('/edit', async (req, res) => {
     if (req.query.fertig == "true" || req.query.fertig == "True") {
         fertig = true;
     }
+    console.log(name + gruppe + prio + ende + fertig);
     await toDo.updateOne({ id: parseInt(req.query.id.toString()) }, { $set: { name: name, gruppe: gruppe, prio: prio, ende: ende, fertig: fertig } });
     return res.send("Bearbeitet");
 });
