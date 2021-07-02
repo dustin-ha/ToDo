@@ -13,9 +13,9 @@ class App {
   }
 
   middlewares() {
-    //const allowedOrigins = ['http://localhost:3000','http://*.*.*.*/', '*'];
+    const allowedOrigins = ['http://localhost:3000','http://*.*.*.*/', '*'];
     const options: cors.CorsOptions = {
-      
+      origin: allowedOrigins
     };
     this.server.use(cors(options));
     this.server.use(express.json());
