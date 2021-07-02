@@ -8,10 +8,8 @@ class App {
         this.routes();
     }
     middlewares() {
-        const allowedOrigins = ['http://localhost:3000'];
-        const options = {
-            origin: allowedOrigins
-        };
+        //const allowedOrigins = ['http://localhost:3000','http://*.*.*.*/', '*'];
+        const options = {};
         this.server.use(cors(options));
         this.server.use(express.json());
     }
